@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Parser</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { border: 1px solid #ccc; border-radius: 8px; padding: 1em; margin-bottom: 1em; }
+        input, button { font-size: 1em; padding: 0.5em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Parser</h1>
+
+        <h2>Upload Resume</h2>
+        <form id="upload-form">
+            <input type="file" id="resume-file" required>
+            <button type="submit">Upload</button>
+        </form>
+        <p id="upload-status"></p>
+
+        <hr>
+
+        <h2>Search Resumes</h2>
+        <form id="search-form">
+            <input type="text" id="search-query" placeholder="Search for text...">
+            <input type="text" id="search-skill" placeholder="Filter by skill...">
+            <button type="submit">Search</button>
+        </form>
+
+        <h2>Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // --- JavaScript for Uploading ---
+        const uploadForm = document.getElementById('upload-form');
+        const uploadStatus = document.getElementById('upload-status');
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('resume-file');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            uploadStatus.textContent = 'Uploading...';
+
+            try {
+                const response = await fetch('http://localhost:5000/resumes/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    uploadStatus.textContent = `Upload successful! Task ID: ${data.task_id}`;
+                } else {
+                    uploadStatus.textContent = 'Upload failed.';
+                }
+            } catch (error) {
+                console.error('Error uploading:', error);
+                uploadStatus.textContent = 'Error during upload.';
+            }
+        });
+
+        // --- JavaScript for Searching ---
+        const searchForm = document.getElementById('search-form');
+        const resultsDiv = document.getElementById('results');
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('search-query').value;
+            const skill = document.getElementById('search-skill').value;
+            
+            // Build the query URL
+            const params = new URLSearchParams();
+            if (query) params.append('q', query);
+            if (skill) params.append('skill', skill);
+            
+            resultsDiv.innerHTML = 'Searching...';
+
+            try {
+                const response = await fetch(`http://localhost:5000/resumes/search?${params.toString()}`);
+                const results = await response.json();
+                
+                resultsDiv.innerHTML = ''; // Clear the 'Searching...' text
+
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = '<p>No results found.</p>';
+                    return;
+                }
+
+                // Display each result
+                results.forEach(candidate => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${candidate.name || 'No Name Found'}</h3>
+                        <p><strong>Email:</strong> ${candidate.email || 'N/A'}</p>
+                        <p><strong>Skills:</strong> ${candidate.skills.join(', ') || 'None'}</p>
+                    `;
+                    resultsDiv.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error searching:', error);
+                resultsDiv.innerHTML = '<p>An error occurred during search.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
