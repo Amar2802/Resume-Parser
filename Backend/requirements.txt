@@ -1,0 +1,13 @@
+Flask
+gunicorn
+celery[redis]
+redis
+SQLAlchemy
+psycopg2-binary
+alembic
+pdfplumber
+python-docx
+spacy
+python-magic
+python-dotenv
+boto3
