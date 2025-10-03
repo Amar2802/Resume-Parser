@@ -19,7 +19,7 @@ def parse_resume_task(self, filepath, filename):
 		experience_years=parsed.get('experience_years'),
 		full_text=parsed.get('full_text'),
 		raw_file_url=filename,
-		metadata={'source_path': filepath}
+		candidate_metadata={'source_path': filepath}
 	)
 	db.session.add(cand)
 	db.session.commit()
