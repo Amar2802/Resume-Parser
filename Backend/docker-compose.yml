@@ -24,10 +24,10 @@ services:
       - redis
 
   redis:
-    image: redis:6
+    image: docker.io/library/redis:6
 
   db:
-    image: postgres:14
+    image: docker.io/library/postgres:14
     environment:
       - POSTGRES_DB=resumes
       - POSTGRES_USER=postgres
