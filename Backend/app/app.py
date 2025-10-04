@@ -2,7 +2,6 @@ import os
 from flask import Flask, request, jsonify
 from .models import db, Candidate
 from .celery_app import make_celery
-from .tasks import parse_resume_task
 
 def create_app():
     app = Flask(__name__)
@@ -23,6 +22,7 @@ celery = make_celery(app)
 
 @app.route('/resumes/upload', methods=['POST'])
 def upload_resume():
+    from .tasks import parse_resume_task  # <-- MOVED IMPORT
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     file = request.files['file']

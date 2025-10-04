@@ -3,9 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine, pool
 from alembic import context
 
-# --- Make sure this import points to your models file ---
 from Backend.models import db
-# ----------------------------------------------------
 
 config = context.config
 
@@ -16,7 +14,7 @@ target_metadata = db.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
-    url = "postgresql://postgres:postgres@localhost:5432/resumes"
+    url = os.environ.get('DATABASE_URL')
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -28,12 +26,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
-
-    # --- THIS PRINT STATEMENT WILL PROVE THE FILE IS SAVED ---
-    print(">>> Running migrations with the new, hardcoded URL! <<<")
-    # ---------------------------------------------------------
-
-    db_url = "postgresql://postgres:postgres@localhost:5432/resumes"
+    db_url = os.environ.get('DATABASE_URL')
     connectable = create_engine(db_url)
 
     with connectable.connect() as connection:
