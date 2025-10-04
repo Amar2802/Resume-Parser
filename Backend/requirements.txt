@@ -11,3 +11,4 @@ spacy
 python-magic
 python-dotenv
 boto3
+Flask-Cors

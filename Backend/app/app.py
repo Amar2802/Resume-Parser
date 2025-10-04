@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, jsonify
+from flask_cors import CORS 
 from .models import db, Candidate
 from .celery_app import make_celery
 
